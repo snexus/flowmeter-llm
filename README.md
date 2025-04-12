@@ -5,9 +5,12 @@ Calculates average water flow rate from images of water meters using LLM (Large 
 
 **How it works?**
 
-1.  The user takes a photo of their water meter and saves it to a directory.
+1.  The user periodically takes photos of their water meter and saves them (currently assuming .jpeg format) to the *same* directory. Over time, this directory will contain multiple images of the meter.
 2.  The image is analyzed using an LLM to extract the water meter reading and the timestamp from the image's EXIF metadata.
 3.  During analysis, the application calculates the water flow between two consecutive readings based on the time difference (from EXIF timestamps) and the difference in meter readings. The result is then averaged to provide a daily flow rate in liters per day.
+
+
+![Example](meter.png)
 
 **Disclaimer:** This project serves a practical purpose, but is also being used as a learning exercise for the Go programming language.
 
