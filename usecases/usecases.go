@@ -84,29 +84,25 @@ func CreateMd5Hash(text string) string {
 func CalculateFlow(images []entities.ImageMetadata, maxImages int) {
 
 	slices.SortFunc(images, func(a, b entities.ImageMetadata) int { return -a.TakenTimestamp.Compare(b.TakenTimestamp) })
-	fmt.Printf("\nFlow summary over last %d days:\n", maxImages-1)
 
 	nImages := min(len(images), maxImages)
 	dailyConsumption := make([]float64, nImages-1)
 
+	fmt.Printf("\nFlow summary over last %d days:\n", nImages)
+
 	for i := range nImages - 1 {
-		diff_hours := images[i].TakenTimestamp.Sub(images[i+1].TakenTimestamp).Hours()
-		litres_day := float64(images[i].MeterReading-images[i+1].MeterReading) / diff_hours * 24.0
+		diffHours := images[i].TakenTimestamp.Sub(images[i+1].TakenTimestamp).Hours()
+		litresDay := float64(images[i].MeterReading-images[i+1].MeterReading) / diffHours * 24.0
 		fmt.Printf("Flow [L/day] between %s (%d) and %s (%d): %.1f\n", 
 			images[i+1].TakenTimestamp.Format("2006-01-02 15:04"), images[i+1].MeterReading, 
 			images[i].TakenTimestamp.Format("2006-01-02 15:04"), images[i].MeterReading, 
-			litres_day)
-		dailyConsumption[i] = litres_day
+			litresDay)
+		dailyConsumption[i] = litresDay
 	}
-	average := calculateAverage(dailyConsumption)
-	fmt.Printf("\nAverage flow [L/day] over last %d days: %.1f [L/day]\n", maxImages-1, average)
 
-}
+	diffTotal := images[0].TakenTimestamp.Sub(images[nImages-1].TakenTimestamp).Hours()
+	avgTotal := float64(images[0].MeterReading-images[nImages-1].MeterReading) / diffTotal * 24.0
+	
+	fmt.Printf("\nAverage flow [L/day] over last %d days: %.1f [L/day]\n", nImages, avgTotal)
 
-func calculateAverage(list []float64) float64 {
-	total := 0.0
-	for _, num := range list {
-		total += num
-	}
-	return total / float64(len(list))
 }
